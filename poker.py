@@ -1,5 +1,5 @@
-#!/Library/Frameworks/Python.framework/Versions/3.8/bin/python3
 # Attributions to slideshare for the neat list comprehensions
+# more attributions
 
 from card_h import Card, Suit, Blind
 from community_cards_h import *
