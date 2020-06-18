@@ -8,33 +8,11 @@ from player_h import *
 from user_h import *
 import util
 import ranker
+import ascii
 
-def get_user_state(score, lives):
-	return "\t\t\tScore/Level: " + str(score) + " lives: " + str(lives) + "\n"
-
-def preflop(screen):
+def display_table(screen, community_cards):
 	util.clear_screen()
-	util.print_preflop(screen)
-	util.process_continuation_input(screen)
-
-def flop(screen, community_cards, deck):
-	community_cards.append(deck.deal_flop_as_list())
-	util.clear_screen()
-	screen_tmp = screen + community_cards.get_flop()
-	print(screen_tmp)
-	util.process_continuation_input(screen_tmp)
-
-def turn(screen, community_cards, deck):
-	community_cards.append(deck.deal_card())
-	util.clear_screen()
-	screen_tmp = screen + community_cards.get_flop_turn()
-	print(screen_tmp)
-	util.process_continuation_input(screen_tmp)
-
-def river(screen, community_cards, deck):
-	community_cards.append(deck.deal_card())
-	util.clear_screen()
-	screen_tmp = screen + community_cards.get_flop_turn_river()
+	screen_tmp = screen + str(community_cards)
 	print(screen_tmp)
 	util.process_continuation_input(screen_tmp)
 
@@ -68,7 +46,7 @@ def congratulate_winner(screen, community_cards, winners, guess_msg):
 					+ winners_str      \
 					+ "has(have) the highest card!"
 	screen_tmp = screen                                  \
-			     + community_cards.get_flop_turn_river() \
+			     + str(community_cards)                  \
 			     + winner_message                        \
 			     + guess_msg                       
 	util.clear_screen()
@@ -78,7 +56,7 @@ def congratulate_winner(screen, community_cards, winners, guess_msg):
 		
 if __name__ == "__main__":
 	util.clear_screen()
-	print("FERNANDO'S SUPER POKER SIMULATOR 3000")
+	ascii.print_welcome()
 	user = User(score=0, lives=3)
 	deck = Deck()
 	num_players = util.get_num_players()
@@ -95,14 +73,24 @@ if __name__ == "__main__":
 			playing_hands += player.hand_stringify() + "\n\n"
 
 		screen = str(user) + playing_hands
-		
-		preflop(screen)
-		flop(screen, community_cards, deck)			
-		turn(screen, community_cards, deck)	
-		river(screen, community_cards, deck)
 
-		best_card, winners = ranker.get_high_card_from_players(players, \
-															   community_cards)
+		#preflop
+		display_table(screen, community_cards) 
+
+		#flop
+		community_cards.append(deck.deal_flop_as_list())
+		display_table(screen, community_cards) 
+
+		#turn
+		community_cards.append(deck.deal_card())
+		display_table(screen, community_cards)
+
+		#river
+		community_cards.append(deck.deal_card())
+		display_table(screen, community_cards) 
+
+		best_card, winners = \
+			 ranker.get_high_card_from_players(players, community_cards)
 		guess_msg = process_user_guess(user, winners)
 		screen = str(user) + playing_hands
 		congratulate_winner(screen, community_cards, winners, guess_msg )

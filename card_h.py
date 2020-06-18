@@ -1,4 +1,7 @@
 from enum import Enum
+import sys
+
+is_windows = hasattr(sys, 'getwindowsversion')
 
 class Blind(Enum):
 	dealer = 1
@@ -38,9 +41,15 @@ class Card:
 		if self.suit == Suit.spades:
 			suit = "♠"
 		elif self.suit == Suit.hearts:
-			suit = "♡"
+			if is_windows:
+				suit = "♥"
+			else: #unix
+				suit = "♡"
 		elif self.suit == Suit.diamonds:
-			suit = "♢"
+			if is_windows:
+				suit = "♦"
+			else: #unix
+				suit = "♢"
 		elif self.suit == Suit.clubs:
 			suit = "♣"
 		else:
