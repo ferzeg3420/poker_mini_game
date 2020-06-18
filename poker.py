@@ -87,8 +87,7 @@ if __name__ == "__main__":
 	level = 1
 	
 	while True:	
-		#level = get_level(user.score)
-		level = 50
+		level = get_level(user.score)
 		num_players = get_num_players(level)
 		community_cards = Community_cards()
 		deck.shuffle()
