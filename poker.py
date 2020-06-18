@@ -10,6 +10,15 @@ import util
 import ranker
 import ascii
 
+def get_level(score):
+	return (score // 10) + 1
+
+def get_num_players(level):
+	if level > 8:
+		return 9
+	else:
+		return level + 1
+
 def display_table(screen, community_cards):
 	util.clear_screen()
 	screen_tmp = screen + str(community_cards)
@@ -40,11 +49,27 @@ def process_user_guess(user, winners):
 
 def congratulate_winner(screen, community_cards, winners, guess_msg):
 	winners_str = ""
-	for w in winners:
-		winners_str += str(w) + " "
-	winner_message = "\n\nPlayer(s) " \
-					+ winners_str      \
-					+ "has(have) the highest card!"
+	for i, w in enumerate(winners, start=1):
+		if len(winners) == 2 and i == 1:
+			winners_str += str(w) + " and "
+		elif len(winners) == i:
+			winners_str += str(w)
+		elif len(winners) == i + 1:
+			winners_str += str(w) + ", and "
+		elif len(winners) != 1:
+			winners_str += str(w) + ", "
+		else:
+			winners_str += str(w)
+		
+	if len(winners) == 1:
+		winner_message = "\n\nPlayer " \
+						+ winners_str      \
+						+ " has the best hand!"
+	else:
+		winner_message = "\n\nPlayer " \
+						+ winners_str      \
+						+ " have the best hand!"
+		
 	screen_tmp = screen                                  \
 			     + str(community_cards)                  \
 			     + winner_message                        \
@@ -59,10 +84,12 @@ if __name__ == "__main__":
 	ascii.print_welcome()
 	user = User(score=0, lives=3)
 	deck = Deck()
-	num_players = util.get_num_players()
-	level = num_players - 1
+	level = 1
 	
 	while True:	
+		#level = get_level(user.score)
+		level = 50
+		num_players = get_num_players(level)
 		community_cards = Community_cards()
 		deck.shuffle()
 		players = [ Player(i) for i in range(1, num_players + 1) ]
@@ -89,11 +116,10 @@ if __name__ == "__main__":
 		community_cards.append(deck.deal_card())
 		display_table(screen, community_cards) 
 
-		best_card, winners = \
-			 ranker.get_high_card_from_players(players, community_cards)
+		winners = ranker.find_winners(players, community_cards)
 		guess_msg = process_user_guess(user, winners)
 		screen = str(user) + playing_hands
-		congratulate_winner(screen, community_cards, winners, guess_msg )
+		congratulate_winner(screen, community_cards, winners, guess_msg)
 
 		util.clear_player_hands(players)
 		if user.lives <= 0 or user.score >= 100:

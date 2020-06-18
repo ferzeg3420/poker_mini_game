@@ -14,6 +14,8 @@ def lives_2_hearts(lives):
 	if is_windows:
 		for i in range(lives):
 			hearts_str += "♥"
+		for i in range(lives):
+			hearts_str += " "
 	else:
 		for i in range(lives):
 			hearts_str += "♥"
@@ -21,7 +23,7 @@ def lives_2_hearts(lives):
 			hearts_str += "♡"
 	return hearts_str	
 
-def get_num_players():
+def get_num_players_from_user():
 	num_players = 0
 	while num_players < 1 or num_players > 9:
 		print("Select the number of players (1-9). Enter q to exit: ")

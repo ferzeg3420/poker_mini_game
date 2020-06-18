@@ -11,5 +11,19 @@ class User:
 		hearts = util.lives_2_hearts(self.lives)
 		lives = self.lives
 		name = self.name
-		user_string = name + "\t" + hearts + "\t\tScore: " + str(score) + "\n\n"
+		if self.lives == 0:
+			user_string = name               \
+                          + "\t"             \
+                          + hearts           \
+                          + " Tilted"        \
+                          + "\tScore: "      \
+                          + str(score)       \
+                          + "\n\n"
+		else:
+			user_string = name               \
+                          + "\t"             \
+                          + hearts           \
+                          + "\t\tScore: "    \
+                          + str(score)       \
+                          + "\n\n"         
 		return user_string

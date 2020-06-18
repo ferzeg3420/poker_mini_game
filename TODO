@@ -1,0 +1,37 @@
+Score each ranking like follows using 64 bits
+
+Royal Flush (just for fun):
+10 00 00 00 00 00
+
+Straight flushes:
+9 00 00 00 00 00
+
+Four of a kind:
+8 00 00 00 00 00
+
+Full house:
+7 00 00 00 00 00 
+
+Flush:
+6 00 00 00 00 00
+
+Straight:
+5 00 00 00 00 00
+
+Three of a kind:
+4 00 00 00 00 00
+
+Two pairs:
+3 00 00 00 00 00
+
+One pair:
+2 00 00 00 00 00
+
+High cards:
+1 00 00 00 00 00
+
+The strength of the hands would be encoded in each two digits.
+If the second highest is a k then 
+
+
+The next step would be to add 14 * position to the value instead. However, the previous scheme makes debugging easier.
