@@ -4,6 +4,7 @@ class Player:
 	def __init__(self, id):
 		self.id = id
 		self.hand = []
+		self.showdown_hand = ""
 		self.chips = 0
 		self.blind = Blind.no_blind
 

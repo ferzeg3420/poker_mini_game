@@ -196,69 +196,70 @@ def find_straight_flush(flushes):
 		if check_straight( (flushes[:5 + i])[-5:] ):
 			return flushes[:5 + i][-5:]
 	return []
+
+def unbracket(cards):
+	return str(cards)[1:-1]
 	
-def get_hand_score(player, community_cards, is_tutorial):
+def get_hand_score(player, community_cards):
 	combined_cards = combine_cards(player, community_cards)
 	flushes = find_all_flushes(combined_cards)
 	straight_flush = find_straight_flush(flushes)
 	if len(straight_flush) > 0:
-		if(is_tutorial):
-			print("Player", player.id, "with a straight flush")
-			print(straight_flush)
+		showdown_hand = "Player " + str(player.id) 
+		showdown_hand += " with a straight flush: "
+		showdown_hand += unbraket(straight_flush)
+		player.showdown_hand = showdown_hand
 		return STRAIGHT_FLUSH + score_cards(straight_flush)
 	score_reps, rep_hand = find_reps_or_high_card(combined_cards)
 	if score_reps >= FOUR_OF_A_KIND:
-		if(is_tutorial):
-			print("Player", player.id, "with four of a kind")
-			print(rep_hand)
+		showdown_hand = "Player " + str(player.id) + " with four of a kind: "
+		showdown_hand += unbracket(rep_hand)
+		player.showdown_hand = showdown_hand
 		return score_reps
 	if score_reps >= FULL_HOUSE:
-		if(is_tutorial):
-			print("Player", player.id, "with a full house")
-			print(rep_hand)
+		showdown_hand = "Player " + str(player.id) + " with a full house: "
+		showdown_hand += unbracket(rep_hand)
+		player.showdown_hand = showdown_hand
 		return score_reps
 	best_flush = flushes[:5]
 	if len(best_flush) == 5:
-		if(is_tutorial):
-			print("Player", player.id, "with a flush")
-			print(best_flush)
+		showdown_hand = "Player ", str(player.id), " with a flush: "
+		showdown_hand += unbracket(best_flush)
+		player.showdown_hand = showdown_hand
 		return FLUSH + score_cards(best_flush)
 	straights = find_straights(combined_cards)
 	if len(straights) > 0:
-		if(is_tutorial):
-			print("Player", player.id, "with a straight")
-			straights[0].sort(reverse=True)
-			print(straights[0])
+		showdown_hand = "Player " + str(player.id) + " with a straight: "
+		straights[0].sort(reverse=True)
+		showdown_hand += unbracket(straights[0])
+		player.showdown_hand = showdown_hand
 		return STRAIGHT + score_cards(straights[0])
 	if score_reps >= THREE_OF_A_KIND:
-		if(is_tutorial):
-			print("Player", player.id, "with three of a kind")
-			print(rep_hand)
+		showdown_hand = "Player " + str(player.id) + " with three of a kind: "
+		showdown_hand += unbracket(rep_hand)
+		player.showdown_hand = showdown_hand
 		return score_reps
 	if score_reps >= TWO_PAIR:
-		if(is_tutorial):
-			print("Player", player.id, "with two pairs")
-			print(rep_hand)
+		showdown_hand = "Player " + str(player.id) + " with two pairs: "
+		showdown_hand += unbracket(rep_hand)
+		player.showdown_hand = showdown_hand
 		return score_reps
 	if score_reps >= PAIR:
-		if(is_tutorial):
-			print("Player", player.id, "with a pair")
-			print(rep_hand)
+		showdown_hand = "Player " + str(player.id) + " with a pair: "
+		showdown_hand += unbracket(rep_hand)
+		player.showdown_hand = showdown_hand
 		return score_reps
 	else: #high card
-		if(is_tutorial):
-			print("Player", player.id, "with high card")
-			print(rep_hand)
+		showdown_hand = "Player " + str(player.id) + " with high card: "
+		showdown_hand += unbracket(rep_hand)
+		player.showdown_hand = showdown_hand
 		return score_reps
 
-def find_winners(players, community_cards, is_tutorial):
+def find_winners(players, community_cards):
 	cc = community_cards
-	is_t = is_tutorial
-	scored_players =  \
-		[[i, get_hand_score(p, cc, is_t)]for i, p in enumerate(players,start=1)]
+	scored_players =  [ [p, get_hand_score(p, cc)] for p in players]
 	scored_players.sort(reverse=True, key=lambda c: c[1])
 	highest_score = scored_players[0][1]
-	i = 0
 	winners = []
 	for player, score in scored_players:
 		if score < highest_score:
