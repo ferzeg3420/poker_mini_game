@@ -30,6 +30,7 @@ def score_cards(cards):
 	return score
 
 def dedup(cards):
+	#print("deduping", cards)
 	duplicates = []
 	deduped = []
 	last_card = Card('0', Suit.spades) # empty card
@@ -37,7 +38,16 @@ def dedup(cards):
 		if c.get_value_as_int() != last_card.get_value_as_int():
 			deduped.append(c)
 		last_card = c
+	#print("deduped?", deduped)
 	return deduped
+
+def get_best_excluding(cards, to_exclude):
+	best_excluding = []
+	for c in cards:
+		if c not in to_exclude:
+			best_excluding.append(c)
+	return best_excluding
+	
 
 def find_reps_or_high_card(cards):
 	cards.sort(reverse=True)
@@ -47,6 +57,7 @@ def find_reps_or_high_card(cards):
 	three_of_a_kind = []
 	four_of_a_kind = []
 	repetitions = 0
+	print("reps:", cards)
 
 	for i, c in enumerate(cards, start=0):
 		if i + 1 >= len(cards):
@@ -62,12 +73,17 @@ def find_reps_or_high_card(cards):
 				repetitions += 1
 				card_buffer.append(next_card)
 		elif repetitions == 2:
-			#print("appending pair", card_buffer)
+			print("appending pair", card_buffer)
 			pairs.append(card_buffer)
 			card_buffer = []
 			repetitions = 0
 		elif repetitions == 3:
-			three_of_a_kind.append(card_buffer)
+			if len(three_of_a_kind) > 0:
+				print("appending pair", card_buffer)
+				pairs.append(card_buffer[:2])
+			else:
+				print("appending 3 of a kind", card_buffer)
+				three_of_a_kind.append(card_buffer)
 			card_buffer = []
 			repetitions = 0
 		elif repetitions == 4:
@@ -80,7 +96,8 @@ def find_reps_or_high_card(cards):
 			print("ERROR")
 
 	if len(four_of_a_kind) > 0:
-		hand = four_of_a_kind[0] + no_reps[:1]
+		kicker = get_best_excluding(cards, four_of_a_kind[0])
+		hand = four_of_a_kind[0] + kicker[:1]
 		score = FOUR_OF_A_KIND + score_cards(hand)
 	elif len(three_of_a_kind) > 0 and len(pairs) > 0:
 		hand = three_of_a_kind[0] + pairs[0]
@@ -89,7 +106,8 @@ def find_reps_or_high_card(cards):
 		hand = three_of_a_kind[0] + no_reps[:2]
 		score = THREE_OF_A_KIND + score_cards(hand)
 	elif len(pairs) >= 2:
-		hand = pairs[0] + pairs[1] + no_reps[:1]
+		kicker = get_best_excluding(cards, pairs[0] + pairs[1])
+		hand = pairs[0] + pairs[1] + kicker[:1]
 		score = TWO_PAIR + score_cards(hand)
 	elif len(pairs) > 0:
 		hand = pairs[0] + no_reps[:3]
@@ -98,38 +116,6 @@ def find_reps_or_high_card(cards):
 		hand = no_reps[:5]
 		score = HIGH_CARD + score_cards(hand)
 	return score, hand
-
-def check_straight(cards):
-	#print("find_straights", cards)
-	cards.sort(reverse=True)
-	#print("find_straights sorted:", cards)
-	dedupped = dedup(cards)
-	#print("deduped:", dedupped)
-	straight = []
-	for i, c in enumerate(dedupped, start=0):
-		#print("finding straights:", c)
-		if i + 1 >= len(dedupped):
-			break
-		c_val = c.get_value_as_int()	
-		next_c = dedupped[i + 1]
-		next_val = next_c.get_value_as_int()
-		if c_val == next_val + 1:
-			if len(straight) == 0:
-				#print("making straight with", next_val, c_val)
-				straight.append(c)
-				straight.append(next_c)
-			else:
-				#print("making straight with", next_val)
-				straight.append(next_c)
-		elif next_val == 2 and len(straight) == 4:
-			aces = get_aces(dedupped)
-			for a in aces:
-				straights.append(straight + [ a ] )
-		else: 
-			straight = []
-		if len(straight) >= 5:
-			return True
-	return False
 
 def find_straights(cards):
 	#print("find_straights", cards)
@@ -192,13 +178,40 @@ def find_all_flushes(cards):
 	return flushes
 	
 def find_straight_flush(flushes):
-	for i in range(len(flushes) - 4):
-		if check_straight( (flushes[:5 + i])[-5:] ):
-			return flushes[:5 + i][-5:]
+	flushes.sort(reverse=True)
+	#print("find_straights sorted:", cards)
+	dedupped = dedup(flushes)
+	#print("deduped:", dedupped)
+	straight = []
+	if len(dedupped) < 5:
+		return straight
+	for i, c in enumerate(dedupped, start=0):
+		#print("finding straights:", c)
+		if i + 1 >= len(dedupped):
+			break
+		c_val = c.get_value_as_int()	
+		next_c = dedupped[i + 1]
+		next_val = next_c.get_value_as_int()
+		if c_val == next_val + 1:
+			if len(straight) == 0:
+				#print("making straight with", next_val, c_val)
+				straight.append(c)
+				straight.append(next_c)
+			else:
+				#print("making straight with", next_val)
+				straight.append(next_c)
+		elif next_val == 2 and len(straight) == 4:
+			aces = get_aces(dedupped)
+			for a in aces:
+				return straight + [ a ]
+		else: 
+			straight = []
+		if len(straight) >= 5:
+			return straight
 	return []
 
 def unbracket(cards):
-	return str(cards)[1:-1]
+	return str(str(cards)[1:-1])
 	
 def get_hand_score(player, community_cards):
 	combined_cards = combine_cards(player, community_cards)
@@ -207,7 +220,7 @@ def get_hand_score(player, community_cards):
 	if len(straight_flush) > 0:
 		showdown_hand = "Player " + str(player.id) 
 		showdown_hand += " with a straight flush: "
-		showdown_hand += unbraket(straight_flush)
+		showdown_hand += unbracket(straight_flush)
 		player.showdown_hand = showdown_hand
 		return STRAIGHT_FLUSH + score_cards(straight_flush)
 	score_reps, rep_hand = find_reps_or_high_card(combined_cards)
@@ -223,7 +236,7 @@ def get_hand_score(player, community_cards):
 		return score_reps
 	best_flush = flushes[:5]
 	if len(best_flush) == 5:
-		showdown_hand = "Player ", str(player.id), " with a flush: "
+		showdown_hand = "Player " + str(player.id) + " with a flush: "
 		showdown_hand += unbracket(best_flush)
 		player.showdown_hand = showdown_hand
 		return FLUSH + score_cards(best_flush)

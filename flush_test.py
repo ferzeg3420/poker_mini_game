@@ -1,3 +1,4 @@
+
 # Attributions to slideshare for the neat list comprehensions
 # more attributions
 
@@ -105,24 +106,16 @@ if __name__ == "__main__":
 
 		screen = [user, playing_hands, community_cards, tutorial_msg]
 
-		#preflop
-		draw_screen(screen, is_pause=True)
-
-		#flop
-		community_cards.append(deck.deal_flop_as_list())
-		draw_screen(screen, is_pause=True)
-
-		#turn
-		community_cards.append(deck.deal_card())
-		draw_screen(screen, is_pause=True)
-
-		#river
-		community_cards.append(deck.deal_card())
+		community_cards.append([Card('A', Suit.spades),                 \
+								Card('4', Suit.spades),                 \
+								Card('7', Suit.spades),                 \
+								Card('10', Suit.spades),                 \
+								Card('K', Suit.spades)])
 		draw_screen(screen, is_pause=True)
 
 		winners = ranker.find_winners(players, community_cards)
 		if is_tutorial:
-			screen[3] = "\n\nBest hands:\n" + get_showdown(players)	
+			screen[3] = "\n\nPossible winners:\n" + get_showdown(players)	
 		guess = \
 			get_user_guess(screen)
 		guess_msg = process_user_guess(guess, user, winners)

@@ -19,65 +19,68 @@ def get_num_players(level):
 	else:
 		return level + 1
 
-def display_table(screen, community_cards):
-	util.clear_screen()
-	screen_tmp = screen + str(community_cards)
-	print(screen_tmp)
-	util.process_continuation_input(screen_tmp)
+def draw_screen(screen, is_pause):
+	user = screen[0]
+	playing_hands = screen[1]
+	community_cards = screen[2]
+	tutorial_msg = screen[3]
 
-def get_user_guess():
-	user_guess = ""
-	while user_guess not in list("123456789") :
-		user_guess =  \
+	util.clear_screen()
+	to_draw = str(user) + playing_hands + str(community_cards) + tutorial_msg
+	print(to_draw)
+	if is_pause:
+		util.process_continuation_input(to_draw)
+
+def get_user_guess(screen):
+	guess = ""
+	draw_screen(screen, is_pause=False)
+	while guess not in list("123456789") :
+		guess =  \
 			input("Who's the winner? (use the player's number as your guess) ")
-		if user_guess == "q":
+		if guess == "q":
 			exit()
-	return user_guess
+		if guess == "r":
+			ascii.show_rankings()
+			draw_screen(screen, is_pause=False)
+	print("user guess:", guess)
+	return int(guess)
+
+def is_guess_in_players(guess, players):
+	for p in players:
+		if p.id == guess:
+			return True
+	return False
 
 def is_right_guess(guess, winners):
-	return int(guess) in winners
+	print("is_right_guess")
+	return is_guess_in_players(guess, winners)
 
-def process_user_guess(user, winners):
-	user_guess = get_user_guess()
-	if is_right_guess(user_guess, winners):
-		user.score += 5
+def process_user_guess(guess, user, winners):
+	if is_right_guess(guess, winners):
+		user.score += 2
 		result_message = "\n\nYou're right!"
+		print("You're right!")
 	else:
 		user.lives -= 1
 		result_message = "\n\nSorry, keep trying!"
+		print("Sorry!")
 	return result_message
 
-def congratulate_winner(screen, community_cards, winners, guess_msg):
-	winners_str = ""
-	for i, w in enumerate(winners, start=1):
-		if len(winners) == 2 and i == 1:
-			winners_str += str(w) + " and "
-		elif len(winners) == i:
-			winners_str += str(w)
-		elif len(winners) == i + 1:
-			winners_str += str(w) + ", and "
-		elif len(winners) != 1:
-			winners_str += str(w) + ", "
-		else:
-			winners_str += str(w)
-		
+def congratulate_winner(screen, winners, guess_msg):
+	winner_message = guess_msg + "\n" + get_showdown(winners)	
 	if len(winners) == 1:
-		winner_message = "\n\nPlayer " \
-						+ winners_str      \
-						+ " has the best hand!"
+		winner_message += "has the best hand!"
 	else:
-		winner_message = "\n\nPlayer " \
-						+ winners_str      \
-						+ " have the best hand!"
+		winner_message += "have the best hand!"
 		
-	screen_tmp = screen                                  \
-			     + str(community_cards)                  \
-			     + winner_message                        \
-			     + guess_msg                       
-	util.clear_screen()
-	print(screen_tmp)
-	util.process_continuation_input(screen_tmp)
-	
+	screen[3] += winner_message                       
+	draw_screen(screen, is_pause=True)
+
+def get_showdown(players):
+	res_str = ""
+	for p in players:
+		res_str += p.showdown_hand + "\n"
+	return res_str
 		
 if __name__ == "__main__":
 	util.clear_screen()
@@ -94,29 +97,31 @@ if __name__ == "__main__":
 		deck.shuffle()
 		players = [ Player(i) for i in range(1, num_players + 1) ]
 		deck.deal_player_hands(players)
+		tutorial_msg = ""
 			
 		playing_hands = ""
 		for player in players:
 			playing_hands += player.hand_stringify() + "\n\n"
 
-		screen = str(user) + playing_hands
+		screen = [user, playing_hands, community_cards, tutorial_msg]
 
 		community_cards.append([Card('A', Suit.spades),                 \
 								Card('A', Suit.spades),                 \
 								Card('A', Suit.spades),                 \
 								Card('A', Suit.spades),                 \
 								Card('2', Suit.spades)])
-		display_table(screen, community_cards) 
+		draw_screen(screen, is_pause=True)
 
-
-		winners = ranker.find_winners(players, community_cards, is_tutorial)
-		guess_msg = process_user_guess(user, winners)
-		screen = str(user) + playing_hands
-		congratulate_winner(screen, community_cards, winners, guess_msg)
+		winners = ranker.find_winners(players, community_cards)
+		if is_tutorial:
+			screen[3] = "\n\nPossible winners:\n" + get_showdown(players)	
+		guess = \
+			get_user_guess(screen)
+		guess_msg = process_user_guess(guess, user, winners)
+		congratulate_winner(screen, winners, guess_msg)
 
 		util.clear_player_hands(players)
 		if user.lives <= 0 or user.score >= 100:
 			break
 
 	print( "Final score:", user.score, "great Job!" )
-        				
