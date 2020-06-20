@@ -23,7 +23,7 @@ def lives_2_hearts(lives):
 			hearts_str += "♡"
 	return hearts_str	
 
-def get_num_players_from_user():
+def get_num_players_from_user(): # deprecated?
 	num_players = 0
 	while num_players < 1 or num_players > 9:
 		print("Select the number of players (1-9). Enter q to exit: ")
@@ -36,6 +36,17 @@ def get_num_players_from_user():
 			continue
 		num_players = int(num_players_str)
 	return num_players
+
+def is_tutorial_mode(): 
+	answer = 'x'
+	while answer != 'y' and answer != 'n':
+		print("Would you like to play in tutorial mode? (y/n) q to exit")
+		answer = input()
+		if answer == "":
+			continue
+		if answer == "q":
+			exit()
+	return answer == 'y'
 
 def clear_player_hands(players):
 	for player in players:

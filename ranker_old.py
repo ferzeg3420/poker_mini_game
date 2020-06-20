@@ -29,16 +29,6 @@ def score_cards(cards):
 		score += c.get_value_as_int() * (10 ** (8 - 2 *i))
 	return score
 
-def dedup(cards):
-	duplicates = []
-	deduped = []
-	last_card = Card('0', Suit.spades) # empty card
-	for i, c in enumerate(cards, start=0):
-		if c.get_value_as_int() != last_card.get_value_as_int():
-			deduped.append(c)
-		last_card = c
-	return deduped
-
 def find_reps_or_high_card(cards):
 	cards.sort(reverse=True)
 	pairs = []
@@ -99,108 +89,125 @@ def find_reps_or_high_card(cards):
 		score = HIGH_CARD + score_cards(hand)
 	return score, hand
 
-def check_straight(cards):
-	#print("find_straights", cards)
-	cards.sort(reverse=True)
-	#print("find_straights sorted:", cards)
-	dedupped = dedup(cards)
-	#print("deduped:", dedupped)
-	straight = []
-	for i, c in enumerate(dedupped, start=0):
-		#print("finding straights:", c)
-		if i + 1 >= len(dedupped):
-			break
-		c_val = c.get_value_as_int()	
-		next_c = dedupped[i + 1]
-		next_val = next_c.get_value_as_int()
-		if c_val == next_val + 1:
-			if len(straight) == 0:
-				#print("making straight with", next_val, c_val)
-				straight.append(c)
-				straight.append(next_c)
-			else:
-				#print("making straight with", next_val)
-				straight.append(next_c)
-		elif next_val == 2 and len(straight) == 4:
-			aces = get_aces(dedupped)
-			for a in aces:
-				straights.append(straight + [ a ] )
-		else: 
-			straight = []
-		if len(straight) >= 5:
-			return True
-	return False
+def check_flush(cards):
+	cards.sort(reverse=True, key=lambda c: c.suit.value)
+	last_suit = cards[0].suit
+	for c in cards:
+		if c.suit != last_suit:
+			return False
+	return True
+
+def branch_duplicates(cards):
+	duplicates = []
+	deduped_possible_cards = []
+	last_card = Card('0', Suit.spades) # empty card
+	for i, c in enumerate(cards, start=0):
+		if c.get_value_as_int() == last_card.get_value_as_int():
+			duplicates.append(i)
+		last_card = c
+	card_set_buffer = []
+	
+	if len(duplicates) > 2: # if more than 2 then no possible straight w 7cards
+		deduped_possible_cards.append(cards)
+		return deduped_possible_cards
+
+	if len(duplicates) == 2:
+		d = duplicates[0]
+		dd = duplicates[1]
+		first_div = cards[:d-1] + cards[d:]	
+		second_div = cards[:d] + cards[d+1:]	
+		deduped_possible_cards.append(first_div[:d] + first_div[d+1:])
+		deduped_possible_cards.append(first_div[:d-1] + first_div[d:])
+		deduped_possible_cards.append(second_div[:d] + first_div[d+1:])
+		deduped_possible_cards.append(second_div[:d-1] + second_div[d:])
+
+	if len(duplicates) == 1:
+		d = duplicates[0]
+		deduped_possible_cards.append(cards[:d-1] + cards[d:])
+		deduped_possible_cards.append(cards[:d] + cards[d+1:])
+
+	if len(duplicates) == 0:
+		deduped_possible_cards.append(cards)
+	return deduped_possible_cards
+		
 
 def find_straights(cards):
 	#print("find_straights", cards)
 	cards.sort(reverse=True)
 	#print("find_straights sorted:", cards)
-	dedupped = dedup(cards)
+	dedupped = branch_duplicates(cards)
 	#print("deduped:", dedupped)
 	straights = []
 	straight = []
-	for i, c in enumerate(dedupped, start=0):
-		#print("finding straights:", c)
-		if i + 1 >= len(dedupped):
-			break
-		c_val = c.get_value_as_int()	
-		next_c = dedupped[i + 1]
-		next_val = next_c.get_value_as_int()
-		if c_val == next_val + 1:
-			if len(straight) == 0:
-				#print("making straight with", next_val, c_val)
-				straight.append(c)
-				straight.append(next_c)
+	for dd in dedupped:
+		for i, c in enumerate(dd, start=0):
+			#print("finding straights:", c)
+			c_val = c.get_value_as_int()	
+			if i+1 >= len(dd):
+				next_val = 15 # just to make sure next test fails
 			else:
-				#print("making straight with", next_val)
-				straight.append(next_c)
-		elif next_val == 2 and len(straight) == 4:
-			aces = get_aces(dedupped)
-			for a in aces:
-				straights.append(straight + [ a ] )
-			break # no other possible straights below 2, A, etc.
-		else: 
-			straight = []
-		if len(straight) >= 5:
-			straights.append(straight[-5:])		
+				next_c = dd[i+1]
+				next_val = next_c.get_value_as_int()
+			if c_val == next_val + 1:
+				if len(straight) == 0:
+					#print("making straight with", next_val, c_val)
+					straight.append(c)
+					straight.append(next_c)
+				else:
+					#print("making straight with", next_val)
+					straight.append(next_c)
+			elif next_val == 2 and len(straight) == 4:
+				aces = get_aces(dd)
+				for a in aces:
+					straights.append(straight + [ a ] )
+			else:
+				if len(straight) >= 5:
+					straights.append(straight[:5])
+				straight = []
+	#print("all straights:", straights)
 	return straights
 
-def find_all_flushes(cards):
+def find_best_flush(cards):
 	#print("find best flush")
 	cards.sort(reverse=True, key=lambda c: (c.suit.value, c))
 	#print("find best flush", cards)
 	flushes = []
+	candidate = []
 	for i, c in enumerate(cards, start=0):
 		#print("looking at:", c)
 		if len(cards) <= i + 1:
+			if len(candidate) >= 5:
+				flushes.append(candidate[:5])
 			break
 		next_card = cards[i + 1]
 		if c.suit == next_card.suit:
-			if len(flushes) == 0:
-				flushes.append(c)
-				flushes.append(next_card)
+			if len(candidate) == 0:
+				candidate.append(c)
+				candidate.append(next_card)
 			else:
-				flushes.append(next_card)
-		elif len(flushes) >= 5: 
-			break
+				candidate.append(next_card)
 		else:
-			flushes = []
-
-	if len(flushes) < 5:
-		flushes = []
-
-	return flushes
+			if len(candidate) >= 5:
+				flushes.append(candidate[:5])
+				break
+			else:
+				candidate = []
 	
-def find_straight_flush(flushes):
-	for i in range(len(flushes) - 4):
-		if check_straight( (flushes[:5 + i])[-5:] ):
-			return flushes[:5 + i][-5:]
+	if len(flushes) > 0:
+		return flushes[0]
+	else: 
+		return []
+
+def find_straight_flush(straights):
+	for s in straights:
+		if( check_flush(s) ):
+			return s
 	return []
 	
 def get_hand_score(player, community_cards, is_tutorial):
 	combined_cards = combine_cards(player, community_cards)
-	flushes = find_all_flushes(combined_cards)
-	straight_flush = find_straight_flush(flushes)
+	straights = find_straights(combined_cards)
+	straight_flush = find_straight_flush(straights)
 	if len(straight_flush) > 0:
 		if(is_tutorial):
 			print("Player", player.id, "with a straight flush")
@@ -217,13 +224,12 @@ def get_hand_score(player, community_cards, is_tutorial):
 			print("Player", player.id, "with a full house")
 			print(rep_hand)
 		return score_reps
-	best_flush = flushes[:5]
-	if len(best_flush) == 5:
+	flush = find_best_flush(combined_cards)
+	if len(flush) > 0:
 		if(is_tutorial):
 			print("Player", player.id, "with a flush")
-			print(best_flush)
-		return FLUSH + score_cards(best_flush)
-	straights = find_straights(combined_cards)
+			print(flush)
+		return FLUSH + score_cards(flush)
 	if len(straights) > 0:
 		if(is_tutorial):
 			print("Player", player.id, "with a straight")

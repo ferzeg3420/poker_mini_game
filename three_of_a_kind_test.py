@@ -40,7 +40,7 @@ def is_right_guess(guess, winners):
 def process_user_guess(user, winners):
 	user_guess = get_user_guess()
 	if is_right_guess(user_guess, winners):
-		user.score += 2
+		user.score += 5
 		result_message = "\n\nYou're right!"
 	else:
 		user.lives -= 1
@@ -101,20 +101,13 @@ if __name__ == "__main__":
 
 		screen = str(user) + playing_hands
 
-		#preflop
+		community_cards.append([Card('A', Suit.clubs),                 \
+								Card('A', Suit.spades),                 \
+								Card('A', Suit.hearts),                 \
+								Card('K', Suit.diamonds),                 \
+								Card('2', Suit.spades)])
 		display_table(screen, community_cards) 
 
-		#flop
-		community_cards.append(deck.deal_flop_as_list())
-		display_table(screen, community_cards) 
-
-		#turn
-		community_cards.append(deck.deal_card())
-		display_table(screen, community_cards)
-
-		#river
-		community_cards.append(deck.deal_card())
-		display_table(screen, community_cards) 
 
 		winners = ranker.find_winners(players, community_cards, is_tutorial)
 		guess_msg = process_user_guess(user, winners)
