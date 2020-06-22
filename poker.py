@@ -9,6 +9,7 @@ from user_h import *
 import util
 import ranker
 import ascii
+import time
 
 def get_level(score):
 	return (score // 10) + 1
@@ -42,7 +43,6 @@ def get_user_guess(screen):
 		if guess == "r":
 			ascii.show_rankings()
 			draw_screen(screen, is_pause=False)
-	print("user guess:", guess)
 	return int(guess)
 
 def is_guess_in_players(guess, players):
@@ -52,18 +52,15 @@ def is_guess_in_players(guess, players):
 	return False
 
 def is_right_guess(guess, winners):
-	print("is_right_guess")
 	return is_guess_in_players(guess, winners)
 
 def process_user_guess(guess, user, winners):
 	if is_right_guess(guess, winners):
 		user.score += 2
 		result_message = "\n\nYou're right!"
-		print("You're right!")
 	else:
-		user.lives -= 1
+		user.lives -= 3
 		result_message = "\n\nSorry, keep trying!"
-		print("Sorry!")
 	return result_message
 
 def congratulate_winner(screen, winners, guess_msg):
@@ -89,6 +86,10 @@ if __name__ == "__main__":
 	deck = Deck()
 	level = 1
 	is_tutorial = util.is_tutorial_mode()
+	if is_tutorial:
+		util.show_tutorial()
+	else:
+		start_time = time.perf_counter()
 	
 	while True:	
 		level = get_level(user.score)
@@ -123,8 +124,7 @@ if __name__ == "__main__":
 		winners = ranker.find_winners(players, community_cards)
 		if is_tutorial:
 			screen[3] = "\n\nBest hands:\n" + get_showdown(players)	
-		guess = \
-			get_user_guess(screen)
+		guess = get_user_guess(screen)
 		guess_msg = process_user_guess(guess, user, winners)
 		congratulate_winner(screen, winners, guess_msg)
 
@@ -133,4 +133,8 @@ if __name__ == "__main__":
 			break
 
 	print( "Final score:", user.score, "great Job!" )
-        				
+	if not is_tutorial:
+		play_time = (time.perf_counter() - start_time)/60 #in minutes
+	input()
+	if not is_tutorial:
+		util.save_score(user, play_time)

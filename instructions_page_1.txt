@@ -1,0 +1,25 @@
+Page 1/2
+	
+The way Texas Hold'em Poker works players combine the two cards in
+their hands with the cards at the center of the table and they
+assemble the best set of five cards possible.
+
+The rarer the set of five cards, the higher its ranking. Royal
+flushes (check the rankings by pressing r and then enter) are
+extremely rare and as such are the highest value hands. Pairs, on
+the other hand, are way more common, so when player 1 has a royal
+flush and player 2 has a pair, player 1 should be declared the
+winner.
+
+You can press r at any prompt to see the rankings, but you also
+need to know about tiebreakers for hands of the same ranking:
+
+Royal flushes always tie, which means both players split the pot.
+
+The better between two straight flushes is the one with the highest
+value card.
+
+Four of a kind of a higher value win and in case of a tie (not
+possible with the standard deck you're using) the extra card is the
+deciding factor. If everything's equal, then players split the pot.
+This is true for the rest of the hands.

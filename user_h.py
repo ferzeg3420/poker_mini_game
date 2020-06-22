@@ -16,14 +16,14 @@ class User:
                           + "\t"             \
                           + hearts           \
                           + " Tilted"        \
-                          + "\tScore: "      \
+                          + "\tCash: $"      \
                           + str(score)       \
                           + "\n\n"
 		else:
 			user_string = name               \
                           + "\t"             \
                           + hearts           \
-                          + "\t\tScore: "    \
+                          + "\t\tCash: $"    \
                           + str(score)       \
                           + "\n\n"         
 		return user_string

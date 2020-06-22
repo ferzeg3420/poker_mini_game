@@ -57,7 +57,7 @@ def find_reps_or_high_card(cards):
 	three_of_a_kind = []
 	four_of_a_kind = []
 	repetitions = 0
-	print("reps:", cards)
+	#print("reps:", cards)
 
 	for i, c in enumerate(cards, start=0):
 		if i + 1 >= len(cards):
@@ -73,16 +73,16 @@ def find_reps_or_high_card(cards):
 				repetitions += 1
 				card_buffer.append(next_card)
 		elif repetitions == 2:
-			print("appending pair", card_buffer)
+			#print("appending pair", card_buffer)
 			pairs.append(card_buffer)
 			card_buffer = []
 			repetitions = 0
 		elif repetitions == 3:
 			if len(three_of_a_kind) > 0:
-				print("appending pair", card_buffer)
+			#	print("appending pair", card_buffer)
 				pairs.append(card_buffer[:2])
 			else:
-				print("appending 3 of a kind", card_buffer)
+			#	print("appending 3 of a kind", card_buffer)
 				three_of_a_kind.append(card_buffer)
 			card_buffer = []
 			repetitions = 0

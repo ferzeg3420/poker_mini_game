@@ -1,0 +1,24 @@
+Page 2/2
+
+Hopefully you start to see a pattern, higher cards in the repeated
+set decide the winner and then the rest of the higher cards are
+succesively used as tie breakers going from highest to lowest.
+
+But let's continue for completeness's sake: Full houses are decided
+by the higher three repeated cards, then the pair.
+
+Flushes are decided by the higher cards in the flush.
+
+Normal straights are decided just like straight flushes.
+
+Three of a kind are decided by the three repeated cards, then the
+rest of the cards from highest to lowest of course.
+
+Two pairs are decided by the higher pair, then the lower, and finally
+by the remaining card.
+
+A pair is decided first by the card value of the pairs and then by
+all the remaining cards.
+
+If all else fails, then high cards determine the winner.
+
