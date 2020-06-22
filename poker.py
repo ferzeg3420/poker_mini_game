@@ -59,7 +59,7 @@ def process_user_guess(guess, user, winners):
 		user.score += 2
 		result_message = "\n\nYou're right!"
 	else:
-		user.lives -= 3
+		user.lives -= 1
 		result_message = "\n\nSorry, keep trying!"
 	return result_message
 
