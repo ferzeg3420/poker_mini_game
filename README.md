@@ -2,9 +2,9 @@
 
 Written using python3
 
-## Goal
+## Mission
 
-Teach players to recognize winner hands as well as basic poker vocabulary.
+Trick people into thinking their playing a game when they're really working for a remote casino MWAHAHAHAHA (not really computers are better at this than people).
 
 ## How to Use
 
