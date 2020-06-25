@@ -78,6 +78,9 @@ def get_showdown(players):
 	for p in players:
 		res_str += p.showdown_hand + "\n"
 	return res_str
+
+def setup_blinds(dealer, num_players):
+	return dealer
 		
 if __name__ == "__main__":
 	util.clear_screen()
@@ -85,6 +88,8 @@ if __name__ == "__main__":
 	user = User(score=0, lives=3)
 	deck = Deck()
 	level = 1
+	dealer = 1
+	small_blind = 0
 	is_tutorial = util.is_tutorial_mode()
 	if is_tutorial:
 		util.show_tutorial()
@@ -94,6 +99,12 @@ if __name__ == "__main__":
 	while True:	
 		level = get_level(user.score)
 		num_players = get_num_players(level)
+		dealer = (dealer % num_players) + 1
+		if num_players == 2:
+			small_blind = dealer
+		else:
+			small_blind = dealer % num_players + 1
+		big_blind = small_blind % num_players + 1
 		community_cards = Community_cards()
 		deck.shuffle()
 		players = [ Player(i) for i in range(1, num_players + 1) ]
@@ -102,7 +113,14 @@ if __name__ == "__main__":
 			
 		playing_hands = ""
 		for player in players:
-			playing_hands += player.hand_stringify() + "\n\n"
+			playing_hands += player.hand_stringify()
+			if player.id == dealer:
+				playing_hands += "  Dealer"
+			if player.id == small_blind:
+				playing_hands += "  Small Blind"
+			elif player.id == big_blind:
+				playing_hands += "  Big Blind"
+			playing_hands += "\n\n"
 
 		screen = [user, playing_hands, community_cards, tutorial_msg]
 
