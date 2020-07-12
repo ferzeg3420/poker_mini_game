@@ -16,6 +16,15 @@ class Deck:
 
 	def deal_card(self):
 		return self.cards.pop(0)
+	
+	def deal_specific_card(self, card):
+		for i, c in enumerate(self.cards):
+			if c.is_same(card):
+				temp = c
+				self.cards.pop(i)
+				return temp
+		assert False
+		return Card('0', Suit.spades)
 
 	def deal_player_hands(self, players):
 		for i in range(len(players)):

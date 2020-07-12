@@ -92,34 +92,24 @@ if __name__ == "__main__":
 	
 	while True:	
 		level = get_level(user.score)
-		num_players = 2
+		num_players = get_num_players(level)
 		community_cards = Community_cards()
 		deck.shuffle()
 		players = [ Player(i) for i in range(1, num_players + 1) ]
-
-		card_x = deck.deal_specific_card(Card('3', Suit.hearts))
-		card_y = deck.deal_specific_card(Card('4', Suit.diamonds))
-		players[0].hand = [ card_x, card_y ]
-
-		for i in range(1, num_players):
-			card_x = deck.deal_card()
-			card_y = deck.deal_card()
-			players[i].hand = [ card_x, card_y ]
-			
+		deck.deal_player_hands(players)
 		tutorial_msg = ""
 			
 		playing_hands = ""
 		for player in players:
 			playing_hands += player.hand_stringify() + "\n\n"
-			print("hand:", player.hand)
 
 		screen = [user, playing_hands, community_cards, tutorial_msg]
 
-		community_cards.append([Card('9', Suit.clubs),                  \
-								Card('7', Suit.spades),                 \
-								Card('6', Suit.spades),                  \
-								Card('5', Suit.hearts),                 \
-								Card('Q', Suit.clubs)])
+		community_cards.append([Card('A', Suit.clubs),                  \
+								Card('K', Suit.spades),                 \
+								Card('Q', Suit.clubs),                  \
+								Card('J', Suit.spades),                 \
+								Card('10', Suit.hearts)])
 		draw_screen(screen, is_pause=True)
 
 		winners = ranker.find_winners(players, community_cards)

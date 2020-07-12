@@ -93,7 +93,7 @@ def find_reps_or_high_card(cards):
 		elif repetitions == 0:
 			no_reps.append(c)
 		else:
-			print("ERROR")
+			print(cards, "ERROR!")
 
 	if len(four_of_a_kind) > 0:
 		kicker = get_best_excluding(cards, four_of_a_kind[0])

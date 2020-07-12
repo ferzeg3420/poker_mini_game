@@ -92,13 +92,13 @@ if __name__ == "__main__":
 	
 	while True:	
 		level = get_level(user.score)
-		num_players = 2
+		num_players = 5
 		community_cards = Community_cards()
 		deck.shuffle()
 		players = [ Player(i) for i in range(1, num_players + 1) ]
 
-		card_x = deck.deal_specific_card(Card('3', Suit.hearts))
-		card_y = deck.deal_specific_card(Card('4', Suit.diamonds))
+		card_x = deck.deal_specific_card(Card('9', Suit.hearts))
+		card_y = deck.deal_specific_card(Card('6', Suit.diamonds))
 		players[0].hand = [ card_x, card_y ]
 
 		for i in range(1, num_players):
@@ -115,10 +115,10 @@ if __name__ == "__main__":
 
 		screen = [user, playing_hands, community_cards, tutorial_msg]
 
-		community_cards.append([Card('9', Suit.clubs),                  \
-								Card('7', Suit.spades),                 \
-								Card('6', Suit.spades),                  \
-								Card('5', Suit.hearts),                 \
+		community_cards.append([Card('10', Suit.hearts),                \
+								Card('A', Suit.clubs),                  \
+								Card('8', Suit.hearts),                 \
+								Card('7', Suit.hearts),                 \
 								Card('Q', Suit.clubs)])
 		draw_screen(screen, is_pause=True)
 

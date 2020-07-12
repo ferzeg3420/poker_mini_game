@@ -5,6 +5,9 @@ is_windows = hasattr(sys, 'getwindowsversion')
 MAX_TIME = 999999.99
 MAX_SCORE = 99999
 
+winning_hand_log_filename = "winning_hands.log"
+losing_hand_log_filename = "losing_hands.log"
+
 def clear_screen():
 	if is_windows:
 		system('cls')
@@ -24,20 +27,6 @@ def lives_2_hearts(lives):
 		for i in range(3 - lives):
 			hearts_str += "♡"
 	return hearts_str	
-
-def get_num_players_from_user(): # deprecated?
-	num_players = 0
-	while num_players < 1 or num_players > 9:
-		print("Select the number of players (1-9). Enter q to exit: ")
-		num_players_str = input()
-		if num_players_str == "q":
-			exit()
-		if num_players_str == "":
-			continue
-		if len(num_players_str) > 1 or num_players_str not in "123456789":
-			continue
-		num_players = int(num_players_str)
-	return num_players
 
 def pause(page):
 	while True:
@@ -106,6 +95,32 @@ def process_continuation_input(state):
 	
 def print_preflop(board_state):
 	print(board_state + "\n\n\n\n\n\n\n\nPre-flop")
+
+def clear_logs():
+	f = open(winning_hand_log_filename, 'w', encoding='utf-8')
+	f.close()
+	f = open(losing_hand_log_filename, 'w', encoding='utf-8')
+	f.close()
+
+def write_to_file(filename, text):
+    with open(filename, 'a', encoding='utf-8') as file:
+        file.write(text)
+
+def record_hands(players, winners, game_round):
+	for p in players:
+		is_winner = False
+		for w in winners:
+			if w.id == p.id:
+				is_winner = True
+				break
+		msg = "R " + str(game_round) + ", "
+		if is_winner:
+			msg += p.hand_stringify() + "\n"
+			write_to_file(winning_hand_log_filename, msg)
+		else:
+			msg += p.hand_stringify() + "\n"
+			write_to_file(losing_hand_log_filename, msg)
+			
 
 def get_user_name():
 	name = ""

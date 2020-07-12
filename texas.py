@@ -11,12 +11,14 @@ import ranker
 import ascii
 import time
 
+MAX_PLAYERS = 9
+
 def get_level(score):
 	return (score // 10) + 1
 
-def get_num_players(level):
+def get_num_players_from_level(level):
 	if level > 8:
-		return 9
+		return MAX_PLAYERS
 	else:
 		return level + 1
 
@@ -84,10 +86,12 @@ def setup_blinds(dealer, num_players):
 		
 if __name__ == "__main__":
 	util.clear_screen()
+	util.clear_logs()
 	ascii.print_welcome()
 	user = User(score=0, lives=3)
 	deck = Deck()
 	level = 1
+	game_round = 1
 	dealer = 1
 	small_blind = 0
 	is_tutorial = util.is_tutorial_mode()
@@ -95,10 +99,11 @@ if __name__ == "__main__":
 		util.show_tutorial()
 	else:
 		start_time = time.perf_counter()
+	all_players = [ Player(p_id) for p_id in range(1, MAX_PLAYERS + 1) ]
 	
 	while True:	
 		level = get_level(user.score)
-		num_players = get_num_players(level)
+		num_players = get_num_players_from_level(level)
 		dealer = (dealer % num_players) + 1
 		if num_players == 2:
 			small_blind = dealer
@@ -107,7 +112,7 @@ if __name__ == "__main__":
 		big_blind = small_blind % num_players + 1
 		community_cards = Community_cards()
 		deck.shuffle()
-		players = [ Player(i) for i in range(1, num_players + 1) ]
+		players = [ all_players[i] for i in range(0, num_players) ]
 		deck.deal_player_hands(players)
 		tutorial_msg = ""
 			
@@ -146,7 +151,9 @@ if __name__ == "__main__":
 		guess_msg = process_user_guess(guess, user, winners)
 		congratulate_winner(screen, winners, guess_msg)
 
+		util.record_hands(players, winners, game_round)
 		util.clear_player_hands(players)
+		game_round += 1
 		if user.lives <= 0 or user.score >= 100:
 			break
 
