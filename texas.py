@@ -49,7 +49,7 @@ def get_user_guess(screen):
 
 def is_guess_in_players(guess, players):
 	for p in players:
-		if p.id == guess:
+		if p[0].id == guess:
 			return True
 	return False
 
@@ -78,7 +78,7 @@ def congratulate_winner(screen, winners, guess_msg):
 def get_showdown(players):
 	res_str = ""
 	for p in players:
-		res_str += p.showdown_hand + "\n"
+		res_str += p[0].showdown_hand + "\n"
 	return res_str
 
 def setup_blinds(dealer, num_players):

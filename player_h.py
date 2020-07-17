@@ -53,15 +53,15 @@ class Player:
 
 	@staticmethod
 	def get_num_players_from_user(msg):
-		num_players = 0
-		while num_players < 1 or num_players > 9:
+		num_players = -1
+		while num_players < 0 or num_players > 9:
 			print(msg)
 			num_players_str = input()
 			if num_players_str == "q":
 				exit()
 			if num_players_str == "":
 				continue
-			if len(num_players_str) > 1 or num_players_str not in "123456789":
+			if len(num_players_str) > 1 or num_players_str not in "0123456789":
 				continue
 			num_players = int(num_players_str)
 		return num_players

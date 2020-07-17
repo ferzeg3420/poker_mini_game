@@ -2,6 +2,7 @@ from card_h import *
 import community_cards_h
 import player_h
 
+ROYAL_FLUSH = 91413121110
 STRAIGHT_FLUSH = 90000000000
 FOUR_OF_A_KIND = 80000000000
 FULL_HOUSE = 70000000000 
@@ -94,6 +95,7 @@ def find_reps_or_high_card(cards):
 			no_reps.append(c)
 		else:
 			print(cards, "ERROR!")
+			assert(False)
 
 	if len(four_of_a_kind) > 0:
 		kicker = get_best_excluding(cards, four_of_a_kind[0])
@@ -268,6 +270,29 @@ def get_hand_score(player, community_cards):
 		player.showdown_hand = showdown_hand
 		return score_reps
 
+def get_hand_name(hand_score):
+	if hand_score == ROYAL_FLUSH:
+		return "royal flush"
+	if hand_score > STRAIGHT_FLUSH:
+		return "straight flush"
+	if hand_score > FOUR_OF_A_KIND:
+		return "four of a kind"
+	if hand_score > FULL_HOUSE:
+		return "full house"
+	if hand_score > FLUSH:
+		return "flush"
+	if hand_score > STRAIGHT:
+		return "straight"
+	if hand_score > THREE_OF_A_KIND:
+		return "three of a kind"
+	if hand_score > TWO_PAIR:
+		return "two pair"
+	if hand_score > PAIR:
+		return "pair"
+	if hand_score > HIGH_CARD:
+		return "high card"
+	return "ERROR"
+
 def find_winners(players, community_cards):
 	cc = community_cards
 	scored_players =  [ [p, get_hand_score(p, cc)] for p in players]
@@ -277,5 +302,5 @@ def find_winners(players, community_cards):
 	for player, score in scored_players:
 		if score < highest_score:
 			break
-		winners.append(player)
+		winners.append( [player, score] )
 	return winners

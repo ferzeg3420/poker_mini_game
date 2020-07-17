@@ -110,7 +110,7 @@ def record_hands(players, winners, game_round):
 	for p in players:
 		is_winner = False
 		for w in winners:
-			if w.id == p.id:
+			if w[0].id == p.id:
 				is_winner = True
 				break
 		msg = "R " + str(game_round) + ", "

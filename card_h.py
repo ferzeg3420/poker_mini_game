@@ -116,12 +116,10 @@ class Card:
 	@staticmethod
 	def get_random_card(taken):
 		taken = sorted(taken, key=lambda c: get_pos_value(c), reverse=True)
-		#print("sorted", taken)
 		#print("getting random card")
 		all_cards = [ Card(value, suit) for suit in Suit for value in values ]
 		for tc in taken:
 			to_pop = get_pos_value(tc)
-			#print("popping card", to_pop)
 			all_cards.pop( to_pop )
 		#print(all_cards)
 		random.shuffle(all_cards)
@@ -133,7 +131,9 @@ class Card:
 		while True:
 			card = preprocess_user_card(input(msg))
 			card = card.upper()
-			if card[0] == 'Q':
+			if card == '':
+				continue
+			if card[0] == 'Q' and len(card) == 1:
 				exit()
 			if card[0] == 'R':
 				return Card.get_random_card(taken)

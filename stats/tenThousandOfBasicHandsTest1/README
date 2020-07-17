@@ -1,0 +1,10 @@
+Each starting hand was ran 10 000 against random other cards that are possible in a standar 52-card deck. 
+
+the number at the end of the test name indicates how many other players took part of the game (that is, players that got random cards).
+
+As represents the ace of spades, 10c represents the 10 of clubs, Kd king of diamonds, and 2h the 2 of hearts. 
+
+The last number with the % represents the percentage of wins (wins include ties) 
+If the number doesn't have the % nor the suit suffix, then that's also a percentage of wins.
+
+I didn't run all the possible hands because that would take forever on my machine.

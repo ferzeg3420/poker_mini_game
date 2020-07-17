@@ -13,7 +13,7 @@ import time
 
 MAX_PLAYERS = 9
 NUM_COMMUNITY_CARDS = 5
-NUM_SIMULATIONS = 2000
+NUM_SIMULATIONS = 10000
 CARDS_IN_FLOP = 3
 
 def setup_known_hands(deck, all_players, players_cards):
@@ -41,7 +41,7 @@ def sim_street(deck, all_players, player_cards, comm_cards):
 	wins = 0
 	num_simulations = NUM_SIMULATIONS
 	num_players = 0
-	while num_players < len(player_cards):
+	while num_players < len(player_cards) or num_players == 0:
 		num_players = Player.get_num_players_from_user('Number of players: ')
 	for i in range(num_simulations):
 		community_cards = Community_cards()
@@ -59,9 +59,13 @@ def sim_street(deck, all_players, player_cards, comm_cards):
 
 		deck.deal_player_hands(other_players)
 
-		winners = ranker.find_winners(players, community_cards)
+		if len(players_cards) == 0:
+			winners = ranker.find_winners(other_players, community_cards)
+		else:
+			winners = ranker.find_winners(players, community_cards)
+
 		for p in winners:
-			p.wins += 1
+			p[0].wins += 1
 		util.clear_player_hands(players)
 	display_wins(num_simulations, all_players, len(player_cards))
 
@@ -99,7 +103,6 @@ if __name__ == "__main__":
 	print("as = ace of spades")
 	print("2c = 2 of clubs, d diamonds, and so on (case insensitive).")
 	if input() == 'q': exit()
-	user = User(score=0, lives=3)
 	deck = Deck()
 	all_players = [ Player(p_id) for p_id in range(1, MAX_PLAYERS + 1) ]
 	get_user_msg = "Number of players with known hands: "
@@ -118,8 +121,6 @@ if __name__ == "__main__":
 		sim_street(deck, all_players, players_cards, community_cards)
 
 		community_cards = get_player_flop(taken_cards)
-		for cc in community_cards:
-			taken_cards.append(cc)
 
 		print(community_cards)
 		sim_street(deck, all_players, players_cards, community_cards)
